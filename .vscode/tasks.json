@@ -1,0 +1,32 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++.exe build active file",
+			"command": "D:/Scoop/apps/gcc/current/bin/g++.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}\\a.exe",
+				"-fexec-charset=utf-8"
+			],
+			"options": {
+				"cwd": "D:/Scoop/apps/gcc/current/bin",
+				"shell": {
+					"executable": "D:/Scoop/shims/pwsh.exe"
+				}
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: D:/Scoop/apps/gcc/current/bin/g++.exe"
+		},
+	]
+}
