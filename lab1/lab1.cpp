@@ -3,12 +3,17 @@ using namespace std;
 
 template <typename T> class SqList {
 private:
-  int _psize;
+  // 物理大小
+  int _physicsSize;
+  // 逻辑大小
   int _size;
+  // 起始索引，偏移这个变量实现O(1)的insertHead
   int _startIndex;
+  // 所有元素，一个指针，指向对应数组，析构函数会自动回收
   T *_elems;
+  // 扩容物理大小来容纳更多元素，自动重置起始索引
   void resize(int newSize) {
-    if (newSize <= _psize) {
+    if (newSize <= _physicsSize) {
       throw "new size too small";
     }
     T *newElems = new T[newSize];
@@ -17,39 +22,127 @@ private:
     }
     delete[] _elems;
     this->_elems = newElems;
-    this->_psize = newSize;
+    this->_physicsSize = newSize;
     this->_startIndex = 0;
+  }
+  T safeGet(int index) { return _elems[(index + _startIndex) % _physicsSize]; }
+  // 给定逻辑索引，返回物理索引，多加个物理索引防止取模负数
+  int getTrueIndex(int index) {
+    return (_physicsSize + index + _startIndex) % _physicsSize;
+  }
+  void set(T elem, int index) {
+    if (index > _size || index < 0) {
+      throw "out of range";
+    }
+    _elems[getTrueIndex(index)] = elem;
+  }
+  // 将给定逻辑索引后的元素后移，辅助方法
+  void moveBack(int index) {
+    for (int i = _size; i > index; i--) {
+      int curIndex = getTrueIndex(i);
+      set(safeGet(curIndex - 1), curIndex);
+    }
+  }
+
+  void swap(int i, int j) {
+    T temp = get(i);
+    set(get(j), i);
+    set(temp, j);
   }
 
 public:
-  SqList(int n = 10) : _psize(n), _startIndex(0) { _elems = new T[n]; }
+  // 构造函数，接受一个参数n为默认物理大小
+  SqList(int n = 10) : _physicsSize(n), _startIndex(0) { _elems = new T[n]; }
+
+  SqList(T *elems, int size) : _physicsSize(size * 2), _startIndex(0) {}
+
+  // 析构函数，自动回收内存
   ~SqList() { delete[] _elems; }
+
   int size() { return _size; }
+
   T get(int index) {
-    if (index >= _size) {
+    if (index >= _size || index < 0) {
       throw "index out of range";
     }
-    return _elems[(index + _startIndex) % _psize];
+    return _elems[(index + _startIndex) % _physicsSize];
   }
+
   bool isEmpty() { return size() == 0; }
-  void insert(T elem) {
-    if (_size == _psize) {
-      resize(2 * _psize);
+
+  // 插入尾部
+  void insertTail(T elem) {
+    if (_size == _physicsSize) {
+      resize(2 * _physicsSize);
     }
-    _elems[(_startIndex + _size++) % _psize] = elem;
+    set(elem, safeGet(_size));
   };
+
+  void insertHead(T elem) {
+    if (_size == _physicsSize) {
+      resize(2 * _physicsSize);
+    }
+    _startIndex = (_startIndex - 1 + _physicsSize) % _physicsSize;
+  }
+
+  void insert(T elem) { insertTail(elem); }
+
   void insert(T elem, int index) {
-    if (index > size()) {
+    if (index > size() || index < 0) {
       throw "index out of range";
     }
-  }
-  void insertHead(T elem) {
-    if (_size == _psize) {
-      resize(2 * _psize);
+    if (size() == _physicsSize) {
+      resize(2 * _physicsSize);
     }
-    _startIndex = (_startIndex - 1 + _psize) % _psize;
+    move(index);
+    _elems[getTrueIndex(index)] = elem;
   }
-  static SqList pureMerge(SqList *listA, Sqlist *listB) {}
+
+  void reverse() {
+    for (int i = 0; i < _size / 2; i++) {
+      swap(i, _size - 1 - i);
+    }
+  }
+
+  T max() {
+    if (_size == 0) {
+      throw "sqlist is empty";
+    }
+    T temp = get(0);
+    for (int i = 0; i < _size; i++) {
+      if (get(i) > temp)
+        temp = get(i);
+    }
+    return temp;
+  }
+
+  T min() {
+    if (_size == 0) {
+      throw "sqlist is empty";
+    }
+    T temp = get(0);
+    for (int i = 0; i < _size; i++) {
+      if (get(i) < temp)
+        temp = get(i);
+    }
+    return temp;
+  }
+
+  void sort() {
+    for (int i = 0; i < _size - 1; i++) {
+      for (int j = 0; j < _size - 1 - i; j++) {
+        if (get(i) > get(j)) {
+          temp = get(i);
+          set(get(j), i);
+          set(temp, j);
+        }
+      }
+    }
+  }
+
+  static SqList pureMerge(SqList<T> *listA, SqList<T> *listB) {
+    SqList<T> *newList = new SqList(2 * (listA->_size() + listB->size()));
+  }
 };
 
 int main(int argc, char const *argv[]) {
