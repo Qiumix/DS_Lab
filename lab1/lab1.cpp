@@ -178,18 +178,18 @@ public:
       return pureSingleHelper(listA, newList);
     }
     int indexA = 0, indexB = 0;
-    while (true) {
+    while (true) { // 一个父list空了就直接调用singlehelper
       if (listA->size() <= indexA) {
-        return pureSingleHelper(listB, newList);
+        return pureSingleHelper(listB, newList, indexB);
       }
       if (listB->size() <= indexB) {
-        return pureSingleHelper(listA, newList);
+        return pureSingleHelper(listA, newList, indexA);
       }
       T a = listA->get(indexA);
       T b = listB->get(indexB);
       T x = min(a, b);
 
-      if (newList->isEmpty() || newList->get(newList->size() - 1) == x)
+      if (newList->isEmpty() || newList->get(newList->size() - 1) != x)
         newList->insert(x);
 
       while (indexA < listA->size() && listA->get(indexA) == x)
