@@ -31,7 +31,7 @@ private:
     return (_physicsSize + index + _startIndex) % _physicsSize;
   }
   void set(T elem, int index) {
-    if (index > _size || index < 0) {
+    if (index >= _size || index < 0) {
       throw "out of range";
     }
     _elems[getTrueIndex(index)] = elem;
@@ -39,10 +39,14 @@ private:
   // 将给定逻辑索引后的元素后移，辅助方法
   void moveBack(int index) {
     for (int i = _size; i > index; i--) {
-      int curIndex = getTrueIndex(i);
-      set(safeGet(curIndex - 1), curIndex);
+      int des = getTrueIndex(i);
+      int src = getTrueIndex(i - 1);
+      _elems[des] = _elems[src];
     }
   }
+
+  static T min(T a, T b) { return a < b ? a : b; }
+  static T max(T a, T b) { return a > b ? a : b; }
 
   void swap(int i, int j) {
     T temp = get(i);
@@ -50,11 +54,30 @@ private:
     set(temp, j);
   }
 
+  static SqList<T> *pureSingleHelper( //
+      SqList<T> *origin, SqList<T> *target, int fromIndex = 0) {
+    for (int index = fromIndex; index < origin->size(); index++) {
+      T v = origin->get(index);
+      if (target->isEmpty() || !(target->get(target->size() - 1) == v)) {
+        target->insert(v);
+      }
+    }
+    return target;
+  }
+
 public:
   // 构造函数，接受一个参数n为默认物理大小
-  SqList(int n = 10) : _physicsSize(n), _startIndex(0) { _elems = new T[n]; }
+  SqList(int n = 10) : _physicsSize(n), _startIndex(0), _size(0) {
+    _elems = new T[n];
+  }
 
-  SqList(T *elems, int size) : _physicsSize(size * 2), _startIndex(0) {}
+  SqList(T *elems, int size)
+      : _physicsSize(size * 2), _startIndex(0), _size(0) {
+    _elems = new T[_physicsSize];
+    for (int i = 0; i < size; i++) {
+      insert(elems[i]);
+    }
+  }
 
   // 析构函数，自动回收内存
   ~SqList() { delete[] _elems; }
@@ -75,7 +98,7 @@ public:
     if (_size == _physicsSize) {
       resize(2 * _physicsSize);
     }
-    set(elem, safeGet(_size));
+    _elems[getTrueIndex(_size++)] = elem;
   };
 
   void insertHead(T elem) {
@@ -83,6 +106,8 @@ public:
       resize(2 * _physicsSize);
     }
     _startIndex = (_startIndex - 1 + _physicsSize) % _physicsSize;
+    _elems[_startIndex] = elem;
+    _size++;
   }
 
   void insert(T elem) { insertTail(elem); }
@@ -94,8 +119,9 @@ public:
     if (size() == _physicsSize) {
       resize(2 * _physicsSize);
     }
-    move(index);
+    moveBack(index);
     _elems[getTrueIndex(index)] = elem;
+    _size++;
   }
 
   void reverse() {
@@ -128,20 +154,49 @@ public:
     return temp;
   }
 
-  void sort() {
-    for (int i = 0; i < _size - 1; i++) {
-      for (int j = 0; j < _size - 1 - i; j++) {
-        if (get(i) > get(j)) {
-          temp = get(i);
-          set(get(j), i);
-          set(temp, j);
-        }
-      }
+  void printSelf() {
+    for (int i = 0; i < size(); i++) {
+      cout << get(i) << " ";
     }
+    cout << endl;
   }
 
-  static SqList pureMerge(SqList<T> *listA, SqList<T> *listB) {
-    SqList<T> *newList = new SqList(2 * (listA->_size() + listB->size()));
+  void sort() {
+    for (int i = 0; i < _size - 1; i++)
+      for (int j = 0; j < _size - 1 - i; j++)
+        if (get(j) > get(j + 1))
+          swap(j, j + 1);
+  }
+
+  static SqList<T> *pureMerge(SqList<T> *listA, SqList<T> *listB) {
+    SqList<T> *newList = new SqList(2 * (listA->size() + listB->size()));
+    if (listA->isEmpty() && listB->isEmpty()) {
+      return newList;
+    } else if (listA->isEmpty() && !listB->isEmpty()) {
+      return pureSingleHelper(listB, newList);
+    } else if (!listA->isEmpty() && listB->isEmpty()) {
+      return pureSingleHelper(listA, newList);
+    }
+    int indexA = 0, indexB = 0;
+    while (true) {
+      if (listA->size() <= indexA) {
+        return pureSingleHelper(listB, newList);
+      }
+      if (listB->size() <= indexB) {
+        return pureSingleHelper(listA, newList);
+      }
+      T a = listA->get(indexA);
+      T b = listB->get(indexB);
+      T x = min(a, b);
+
+      if (newList->isEmpty() || newList->get(newList->size() - 1) == x)
+        newList->insert(x);
+
+      while (indexA < listA->size() && listA->get(indexA) == x)
+        indexA++;
+      while (indexB < listB->size() && listB->get(indexB) == x)
+        indexB++;
+    }
   }
 };
 
