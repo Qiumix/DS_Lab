@@ -95,5 +95,6 @@
         "valarray": "cpp",
         "variant": "cpp"
     },
-    "commentTranslate.targetLanguage": "zh-CN"
+    "commentTranslate.targetLanguage": "zh-CN",
+    "C_Cpp.errorSquiggles": "enabled"
 }
