@@ -3,15 +3,15 @@ using namespace std;
 
 template <typename T> class SqList {
 private:
-  // ÎïÀí´óĞ¡
+  // ç‰©ç†å¤§å°
   int _physicsSize;
-  // Âß¼­´óĞ¡
+  // é€»è¾‘å¤§å°
   int _size;
-  // ÆğÊ¼Ë÷Òı£¬Æ«ÒÆÕâ¸ö±äÁ¿ÊµÏÖO(1)µÄinsertHead
+  // èµ·å§‹ç´¢å¼•ï¼Œåç§»è¿™ä¸ªå˜é‡å®ç°O(1)çš„insertHead
   int _startIndex;
-  // ËùÓĞÔªËØ£¬Ò»¸öÖ¸Õë£¬Ö¸Ïò¶ÔÓ¦Êı×é£¬Îö¹¹º¯Êı»á×Ô¶¯»ØÊÕ
+  // æ‰€æœ‰å…ƒç´ ï¼Œä¸€ä¸ªæŒ‡é’ˆï¼ŒæŒ‡å‘å¯¹åº”æ•°ç»„ï¼Œææ„å‡½æ•°ä¼šè‡ªåŠ¨å›æ”¶
   T *_elems;
-  // À©ÈİÎïÀí´óĞ¡À´ÈİÄÉ¸ü¶àÔªËØ£¬×Ô¶¯ÖØÖÃÆğÊ¼Ë÷Òı
+  // æ‰©å®¹ç‰©ç†å¤§å°æ¥å®¹çº³æ›´å¤šå…ƒç´ ï¼Œè‡ªåŠ¨é‡ç½®èµ·å§‹ç´¢å¼•
   void resize(int newSize) {
     if (newSize <= _physicsSize) {
       throw "new size too small";
@@ -26,7 +26,7 @@ private:
     this->_startIndex = 0;
   }
   T safeGet(int index) { return _elems[(index + _startIndex) % _physicsSize]; }
-  // ¸ø¶¨Âß¼­Ë÷Òı£¬·µ»ØÎïÀíË÷Òı£¬¶à¼Ó¸öÎïÀíË÷Òı·ÀÖ¹È¡Ä£¸ºÊı
+  // ç»™å®šé€»è¾‘ç´¢å¼•ï¼Œè¿”å›ç‰©ç†ç´¢å¼•ï¼Œå¤šåŠ ä¸ªç‰©ç†ç´¢å¼•é˜²æ­¢å–æ¨¡è´Ÿæ•°
   int getTrueIndex(int index) {
     return (_physicsSize + index + _startIndex) % _physicsSize;
   }
@@ -36,7 +36,7 @@ private:
     }
     _elems[getTrueIndex(index)] = elem;
   }
-  // ½«¸ø¶¨Âß¼­Ë÷ÒıºóµÄÔªËØºóÒÆ£¬¸¨Öú·½·¨
+  // å°†ç»™å®šé€»è¾‘ç´¢å¼•åçš„å…ƒç´ åç§»ï¼Œè¾…åŠ©æ–¹æ³•
   void moveBack(int index) {
     for (int i = _size; i > index; i--) {
       int des = getTrueIndex(i);
@@ -66,7 +66,7 @@ private:
   }
 
 public:
-  // ¹¹Ôìº¯Êı£¬½ÓÊÜÒ»¸ö²ÎÊınÎªÄ¬ÈÏÎïÀí´óĞ¡
+  // æ„é€ å‡½æ•°ï¼Œæ¥å—ä¸€ä¸ªå‚æ•°nä¸ºé»˜è®¤ç‰©ç†å¤§å°
   SqList(int n = 10) : _physicsSize(n), _startIndex(0), _size(0) {
     _elems = new T[n];
   }
@@ -79,7 +79,7 @@ public:
     }
   }
 
-  // Îö¹¹º¯Êı£¬×Ô¶¯»ØÊÕÄÚ´æ
+  // ææ„å‡½æ•°ï¼Œè‡ªåŠ¨å›æ”¶å†…å­˜
   ~SqList() { delete[] _elems; }
 
   int size() { return _size; }
@@ -93,7 +93,7 @@ public:
 
   bool isEmpty() { return size() == 0; }
 
-  // ²åÈëÎ²²¿
+  // æ’å…¥å°¾éƒ¨
   void insertTail(T elem) {
     if (_size == _physicsSize) {
       resize(2 * _physicsSize);
@@ -178,7 +178,7 @@ public:
       return pureSingleHelper(listA, newList);
     }
     int indexA = 0, indexB = 0;
-    while (true) { // Ò»¸ö¸¸list¿ÕÁË¾ÍÖ±½Óµ÷ÓÃsinglehelper
+    while (true) { // ä¸€ä¸ªçˆ¶listç©ºäº†å°±ç›´æ¥è°ƒç”¨singlehelper
       if (listA->size() <= indexA) {
         return pureSingleHelper(listB, newList, indexB);
       }
@@ -201,7 +201,7 @@ public:
 };
 
 int main(int argc, char const *argv[]) {
-  // ´Ó±ê×¼ÊäÈë¶ÁÈ¡Á½¸öÓĞĞò±íµÄÊı¾İ
+  // ä»æ ‡å‡†è¾“å…¥è¯»å–ä¸¤ä¸ªæœ‰åºè¡¨çš„æ•°æ®
   int n1, n2;
   cin >> n1;
 
@@ -220,14 +220,14 @@ int main(int argc, char const *argv[]) {
     list2->insert(val);
   }
 
-  // ºÏ²¢Á½¸öÓĞĞò±í£¨È¥ÖØ£©
+  // åˆå¹¶ä¸¤ä¸ªæœ‰åºè¡¨ï¼ˆå»é‡ï¼‰
   SqList<int> *merged = SqList<int>::pureMerge(list1, list2);
 
-  // Êä³öºÏ²¢ºóµÄ½á¹û
-  cout << "ºÏ²¢ºóµÄË³Ğò±í£¨ÒÑÈ¥ÖØ£©: ";
+  // è¾“å‡ºåˆå¹¶åçš„ç»“æœ
+  cout << "åˆå¹¶åçš„é¡ºåºè¡¨ï¼ˆå·²å»é‡ï¼‰: ";
   merged->printSelf();
 
-  // ÇåÀíÄÚ´æ
+  // æ¸…ç†å†…å­˜
   delete list1;
   delete list2;
   delete merged;
