@@ -1,5 +1,5 @@
 #include <iostream>
-#include <deque>
+#include <queue>
 
 using namespace std;
 
@@ -64,7 +64,7 @@ public:
 
 int main() {
   LinkedList<int> llist;
-  deque<int> passwd;
+  queue<int> passwd;
   int size, m;
   cin >> m;
   cin >> size;
@@ -73,24 +73,19 @@ int main() {
     cin >> temp;
     llist.insert(temp);
   }
-  Node<int> *pre, *cur;
+  Node<int> *pre;
   pre = llist.getTail();
-  cur = llist.getHead();
   while (!llist.isEmpty()) {
-    cout << llist.size() << endl;
     for (int i = 0; i < m - 1; i++) {
       pre = pre->next;
-      cur = cur->next;
     }
-    passwd.push_back(cur->val);
-    m = cur->val;
+    passwd.push(pre->next->val);
+    m = pre->next->val;
     llist.deleteNext(pre);
-    cur = cur->next;
   }
-  cout << endl;
   while (passwd.size() != 0) {
     cout << passwd.front() << " ";
-    passwd.pop_front();
+    passwd.pop();
   }
   return 0;
 }
