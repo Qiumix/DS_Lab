@@ -1,5 +1,4 @@
 #include <iostream>
-#include <queue>
 
 using namespace std;
 
@@ -18,6 +17,14 @@ private:
 
 public:
   LinkedList() : size_(0), head_(NULL), tail_(NULL) {}
+  ~LinkedList() {
+    auto temp = head_;
+    while (temp) {
+      auto temp2 = temp;
+      temp = temp->next;
+      delete temp2;
+    }
+  }
 
   int size() { return this->size_; }
   bool isEmpty() { return size() == 0; }
@@ -62,30 +69,32 @@ public:
   }
 };
 
+template <typename T> class Pair {
+public:
+  int num;
+  T value;
+  Pair(int n, T v) : num(n), value(v) {};
+};
+
 int main() {
-  LinkedList<int> llist;
-  queue<int> passwd;
+  LinkedList<Pair<int> > llist;
   int size, m;
   cin >> m;
   cin >> size;
   for (int i = 0; i < size; i++) {
     int temp;
     cin >> temp;
-    llist.insert(temp);
+    llist.insert(Pair<int>(i + 1, temp));
   }
-  Node<int> *pre;
+  Node<Pair<int> > *pre;
   pre = llist.getTail();
   while (!llist.isEmpty()) {
     for (int i = 0; i < m - 1; i++) {
       pre = pre->next;
     }
-    passwd.push(pre->next->val);
-    m = pre->next->val;
+    cout << pre->next->val.num << " ";
+    m = pre->next->val.value;
     llist.deleteNext(pre);
-  }
-  while (passwd.size() != 0) {
-    cout << passwd.front() << " ";
-    passwd.pop();
   }
   return 0;
 }
