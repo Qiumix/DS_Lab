@@ -17,24 +17,23 @@ void char_init() {
   }
 }
 
-void hex_print(long long decimal) {
-  cout << "hex version: ";
-  if (decimal == 0) {
-    cout << "0\n";
-    return;
-  }
-
-  stack<char> stk;
+unsigned long long decimal_hanlder(long long decimal) {
   unsigned long long pos;
   if (decimal > 0) {
     pos = decimal;
   } else {
     pos = -decimal;
   }
+  return pos;
+}
+
+void print(int pass, long long decimal) {
+  stack<char> stk;
+  unsigned long long pos = decimal_hanlder(decimal);
 
   while (pos) {
-    stk.push(CHAR[pos % HEX]);
-    pos /= HEX;
+    stk.push(CHAR[pos % pass]);
+    pos /= pass;
   }
 
   if (decimal < 0)
@@ -45,6 +44,15 @@ void hex_print(long long decimal) {
     stk.pop();
   }
   cout << endl;
+}
+
+void hex_print(long long decimal) {
+  cout << "hex version: ";
+  if (decimal == 0) {
+    cout << "0\n";
+    return;
+  }
+  print(HEX, decimal);
 }
 void oct_print(long long decimal) {
   cout << "oct version: ";
@@ -52,28 +60,7 @@ void oct_print(long long decimal) {
     cout << "0\n";
     return;
   }
-
-  stack<char> stk;
-  unsigned long long pos;
-  if (decimal > 0) {
-    pos = decimal;
-  } else {
-    pos = -decimal;
-  }
-
-  while (pos) {
-    stk.push(CHAR[pos % OCT]);
-    pos /= OCT;
-  }
-
-  if (decimal < 0)
-    cout << "-";
-
-  while (!stk.empty()) {
-    cout << stk.top();
-    stk.pop();
-  }
-  cout << endl;
+  print(OCT, decimal);
 }
 void bin_print(long long decimal) {
   cout << "bin version: ";
@@ -81,28 +68,7 @@ void bin_print(long long decimal) {
     cout << "0\n";
     return;
   }
-
-  stack<char> stk;
-  unsigned long long pos;
-  if (decimal > 0) {
-    pos = decimal;
-  } else {
-    pos = -decimal;
-  }
-
-  while (pos) {
-    stk.push(CHAR[pos % BIN]);
-    pos /= BIN;
-  }
-
-  if (decimal < 0)
-    cout << "-";
-
-  while (!stk.empty()) {
-    cout << stk.top();
-    stk.pop();
-  }
-  cout << endl;
+  print(BIN, decimal);
 }
 
 int main() {
