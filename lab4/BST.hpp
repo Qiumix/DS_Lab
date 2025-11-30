@@ -1,5 +1,6 @@
 #include <queue>
 #include <stack>
+#include <iostream>
 using namespace std;
 
 template <typename T> class BST {
@@ -10,11 +11,9 @@ public:
   BST<T> *left_, *right_;
   ~BST() {
     if (left_) {
-      left_->~BST();
       delete left_;
     }
     if (right_) {
-      right_->~BST();
       delete right_;
     }
   }
@@ -47,12 +46,12 @@ public:
   void pre() { RecPreIter(this); }
   void post() { RecPostIter(this); }
   void layerIter() {
-    std::queue<T> q;
+    std::queue<BST<T>*> q;
     q.push(this);
     while (!q.empty()) {
       BST<T> *cur = q.front();
       q.pop();
-      cout << q << endl;
+      cout << cur->value_ << " ";
       if (cur->left_) {
         q.push(cur->left_);
       }
@@ -62,7 +61,7 @@ public:
     }
   }
   void innerIter() {
-    std::stack<T> stk;
+    std::stack<BST<T>*> stk;
     BST<T> *t = this;
     while (t || !stk.empty()) {
       while (t) {
@@ -71,7 +70,7 @@ public:
       }
       t = stk.top();
       stk.pop();
-      cout << t->value_;
+      cout << t->value_ << " ";
       t = t->right_;
     }
   }
@@ -80,7 +79,7 @@ public:
     BST<T> *t = this;
     while (t || !stk.empty()) {
       while (t) {
-        cout << t->value_ << endl;
+        cout << t->value_ << " ";
         stk.push(t);
         t = t->left_;
       }
@@ -91,17 +90,17 @@ public:
   }
 
   void postIter() {
-    std::stack<BST *> stk;
-    BST<T> *t = this, last;
+    std::stack<BST<T>*> stk;
+    BST<T> *t = this, *last = NULL;
     while (t || !stk.empty()) {
       while (t) {
         stk.push(t);
         t = t->left_;
       }
-      t = stk.pop();
+      t = stk.top();
       stk.pop();
       if (!t->right_ || t->right_ == last) {
-        cout << t->value_ << endl;
+        cout << t->value_ << " ";
         last = t;
         t = NULL;
       } else {
@@ -117,17 +116,17 @@ private:
       return;
     }
     RecInnerIter(cur->left_);
-    cout << cur->value_ << endl;
-    RecInnerIter(cur->right);
+    cout << cur->value_ << " ";
+    RecInnerIter(cur->right_);
   }
 
   void RecPreIter(BST<T> *cur) {
     if (cur == NULL) {
       return;
     }
-    cout << cur->value_ << endl;
+    cout << cur->value_ << " ";
     RecPreIter(cur->left_);
-    RecPreIter(cur->right);
+    RecPreIter(cur->right_);
   }
 
   void RecPostIter(BST<T> *cur) {
@@ -135,7 +134,7 @@ private:
       return;
     }
     RecPostIter(cur->left_);
-    RecPostIter(cur->right);
-    cout << cur->value_ << endl;
+    RecPostIter(cur->right_);
+    cout << cur->value_ << " ";
   }
 };
